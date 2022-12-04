@@ -60,3 +60,13 @@ for l in dif_list:
         score += 1
 
 print(score)
+
+score = 0
+
+for e in parsed_lines:
+    if e[0][0] <= e[1][1] and e[0][1] >= e[1][0]:
+        score += 1
+    elif e[0][1] >= e[1][1] and e[0][0] <= e[1][1]:
+        score += 1
+
+print(score)
