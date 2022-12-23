@@ -81,8 +81,6 @@ for l in lines:
                 rope[j][1] += -1
 
             j += 1
-        # visualize(26, rope)
-        # print(rope[-4])
         visited.add(tuple(rope[-1]))
 
     # print(rope)
