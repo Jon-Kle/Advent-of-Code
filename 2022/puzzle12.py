@@ -80,7 +80,7 @@ def dist_decision(point:tuple, destination:tuple):
     return abs(destination[0]-point[0])+abs(destination[1]-point[1])
 
 # path finding algorithms:
-def bfs(num_grid:list, start:tuple, end:tuple, movement_decision) -> int:
+def bfs_unoptimized(num_grid:list, start:tuple, end:tuple, movement_decision) -> int:
     '''
     Breadth-fists search algorithm
     return the minimum amount of steps
@@ -130,6 +130,67 @@ def bfs(num_grid:list, start:tuple, end:tuple, movement_decision) -> int:
         steps += 1
         backtracking_position = backtracking_position.origin
     return steps
+
+
+def bfs(num_grid:list, start:tuple, end:tuple, movement_decision) -> int:
+    '''
+    Breadth-fists search algorithm
+    return the minimum amount of steps
+    '''
+    # data structure: queue
+    visiting = [Tile(start)]
+    # 2D list to store values, that have been visited
+    visited = []
+    for i in num_grid:
+        visited.append([])
+        for j in i:
+            visited[-1].append(False)
+    end = Tile(end)
+
+    while len(visiting) > 0:
+        t = visiting.pop(0)
+        x, y = t[0], t[1]
+        # as long, as the final destination is not reached
+        if t == end:
+            break
+        # find all possible adjacent tiles and add them to the queue
+        # north
+        if x-1 > -1: # if north is inside of the grid
+            north = Tile((x-1, y), height = num_grid[x-1][y])
+            if not visited[x-1][y] and north not in visiting and movement_decision(t.height, north.height): # if north has not been visited and accessible
+                north.origin = t # origin of north is the current tile
+                visiting.append(north)
+        # same as with north
+        # east
+        if y+1 < len(num_grid[0]): # if the adjacent tile is inside of the grid
+            east = Tile((x, y+1), height = num_grid[x][y+1])
+            if not visited[x][y+1] and east not in visiting and movement_decision(t.height, east.height):
+                east.origin = t
+                visiting.append(east)
+        # south
+        if x+1 < len(num_grid): # if the adjacent tile is inside of the grid
+            south = Tile((x+1, y), height = num_grid[x+1][y])
+            if not visited[x+1][y] and south not in visiting and movement_decision(t.height, south.height):
+                south.origin = t
+                visiting.append(south)
+        # west
+        if y-1 > -1: # if the adjacent tile is inside of the grid
+            west = Tile((x, y-1), height = num_grid[x][y-1])
+            if not visited[x][y-1] and west not in visiting and movement_decision(t.height, west.height):
+                west.origin = t
+                visiting.append(west)
+        visited[x][y] = True
+
+    # backtrack
+    backtracking_position = t
+    steps = 0
+    while True:
+        if backtracking_position == start:
+            break
+        steps += 1
+        backtracking_position = backtracking_position.origin
+    return steps
+
 
 def dfs(num_grid:list, start:tuple, end:tuple, movement_decision) -> int:
     '''
@@ -235,6 +296,12 @@ def djikstra(grid:list, start:tuple, end:tuple, movement_decision) -> int:
     return the minimum amount of steps
     '''
     ...
+
+start_time = time.time()
+steps = bfs_unoptimized(num_grid, start, end, check_movement)
+end_time = time.time()
+steps = math.log(steps, 10)
+print('BFS (unoptimized):\n steps:', steps, '\n execution time:', end_time-start_time, 's\n')
 
 start_time = time.time()
 steps = bfs(num_grid, start, end, check_movement)
